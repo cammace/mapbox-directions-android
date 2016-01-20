@@ -12,6 +12,7 @@ import com.mapbox.directions.MapboxDirections;
 import com.mapbox.directions.service.models.DirectionsResponse;
 import com.mapbox.directions.service.models.DirectionsRoute;
 import com.mapbox.directions.service.models.Waypoint;
+import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.annotations.PolylineOptions;
 import com.mapbox.mapboxsdk.constants.Style;
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onMapClick(@NonNull LatLng point) {
                 Waypoint target = new Waypoint(point.getLongitude(), point.getLatitude());
-                checkOffRoute(target);
+                checkOffRoute(target, 0.1);
             }
         });
 
@@ -128,8 +129,9 @@ public class MainActivity extends AppCompatActivity {
                 .width(5));
     }
 
-    private void checkOffRoute(Waypoint target) {
-        if (currentRoute.isOffRoute(target)) {
+    private void checkOffRoute(Waypoint target, double tolerance) {
+
+        if (currentRoute.isOffRoute(target, currentRoute.getGeometry().getWaypoints(), tolerance)) {
             showMessage("You are off-route.");
         } else {
             showMessage("You are not off-route.");
