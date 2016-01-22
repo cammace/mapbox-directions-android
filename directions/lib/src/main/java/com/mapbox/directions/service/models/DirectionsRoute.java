@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by antonio on 11/6/15.
+ * Gives detailed information about an individual route such as the duration, distance and geometry.
  */
 public class DirectionsRoute {
 
@@ -20,6 +20,10 @@ public class DirectionsRoute {
         steps = new ArrayList<>();
     }
 
+    /**
+     * The distance traveled from origin to destination.
+     * @return an integer number with unit meters.
+     */
     public int getDistance() {
         return distance;
     }
@@ -28,6 +32,10 @@ public class DirectionsRoute {
         this.distance = distance;
     }
 
+    /**
+     * The estimated travel time from origin to destination.
+     * @return an integer number with unit seconds.
+     */
     public int getDuration() {
         return duration;
     }
@@ -36,6 +44,10 @@ public class DirectionsRoute {
         this.duration = duration;
     }
 
+    /**
+     * A short, human-readable summary of the route (e.g., major roads traversed).
+     * @return a string briefly describing route.
+     */
     public String getSummary() {
         return summary;
     }
@@ -44,6 +56,10 @@ public class DirectionsRoute {
         this.summary = summary;
     }
 
+    /**
+     * Gives the geometry of the route. Commonly used to draw the route on the mapView.
+     * @return {@link RouteGeometry} object.
+     */
     public RouteGeometry getGeometry() {
         return geometry;
     }
@@ -52,6 +68,10 @@ public class DirectionsRoute {
         this.geometry = geometry;
     }
 
+    /**
+     * Steps gives you the route instructions.
+     * @return List of {@link RouteStep} objects.
+     */
     public List<RouteStep> getSteps() {
         return steps;
     }
@@ -61,11 +81,17 @@ public class DirectionsRoute {
     }
 
     /**
-     * isOffRoute computes distance from given point to polyline and then returns true if distance
-     * is less then or equal to tolerance (in miles).
+     * Computes whether the given point lies on or near a polyline, given a tolerance value in
+     * miles. This method is commonly used to determine whether a users current geolocation is
+     * still following the route.
+     * @param point the {@link Waypoint} in which we are trying to determine whether near polyline.
+     *              Often the devices current location.
+     * @param polyline List of {@link Waypoint} making up the polyline. It's advised to pass a List
+     *                 of size greater then 2 {@link Waypoint} to get accurate results.
+     * @param tolerance double with unit miles.
+     * @return true if distance between point and polyline is greater then tolerance.
      */
-
-    public Boolean isOffRoute(Waypoint point, List<Waypoint> polyline, double tolerance){
+    public static Boolean isOffRoute(Waypoint point, List<Waypoint> polyline, double tolerance){
 
         double distance;
         double shortestDistance = 0.0;
@@ -120,11 +146,9 @@ public class DirectionsRoute {
     }
 
     /**
-     * Same as {@link #isOffRoute(Waypoint, List, double)}
-     * with a default tolerance of 0.1 miles
+     * Same as {@link #isOffRoute(Waypoint, List, double)} with a default tolerance of 0.1 miles.
      */
-
-    public Boolean isOffRoute(Waypoint point, List<Waypoint> polyline){
+    public static Boolean isOffRoute(Waypoint point, List<Waypoint> polyline){
         return isOffRoute(point, polyline, MapboxDirections.OFF_ROUTE_THRESHOLD);
     }
 
@@ -132,16 +156,15 @@ public class DirectionsRoute {
      * gives a list of intermediate points between two given Waypoints
      * More info at: http://williams.best.vwh.net/avform.htm#Intermediate
      */
-
-    private List<Waypoint> pointsBetween(Waypoint start, Waypoint finish, double smoothness){
+    private static List<Waypoint> pointsBetween(Waypoint start, Waypoint finish, double smoothness){
 
         List<Waypoint> pointsBetween = new ArrayList<>();
 
-            // Check if start and finish Waypoints are the same
-            if(start == finish) {
-                pointsBetween.add(start);
-            } else {
-                for(int i = 0; i<smoothness; i++) {
+        // Check if start and finish Waypoints are the same
+        if(start == finish) {
+            pointsBetween.add(start);
+        } else {
+            for(int i = 0; i<smoothness; i++) {
 
                 double lat1 = start.getLatitude();
                 double lon1 = start.getLongitude();
@@ -175,7 +198,13 @@ public class DirectionsRoute {
         return pointsBetween;
     }
 
-    private double computeDistance(Waypoint from, Waypoint to) {
+    /**
+     * Compute distance between two different {@link Waypoint}
+     * @param from first {@link Waypoint}
+     * @param to second {@link Waypoint}
+     * @return distance between two {@link Waypoint}s in miles
+     */
+    private static double computeDistance(Waypoint from, Waypoint to) {
         double dLat = Math.toRadians(to.getLatitude() - from.getLatitude());
         double dLon = Math.toRadians(to.getLongitude() - from.getLongitude());
         double lat1 = Math.toRadians(from.getLatitude());
